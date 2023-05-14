@@ -1,0 +1,269 @@
+using System;
+
+namespace HeroQuest
+{
+    public enum HeroClass
+    {
+        Warrior,
+        Mage,
+        Rogue
+    }
+
+    public class Quest
+    {
+        public string TaskName { get; set; }
+        public string Reward { get; set; }
+        public DateTime TaskDate { get; set; }
+
+        public Quest(string taskName, DateTime taskDate, string reward)
+        {
+            TaskName = taskName;
+            TaskDate = taskDate;
+            Reward = reward;
+        }
+
+        public Quest()
+        {
+            TaskName = "Default task";
+            TaskDate = DateTime.Now;
+            Reward = "Default reward";
+        }
+
+        public override string ToString()
+        {
+            return $"Task Name: {TaskName}, Task Date: {TaskDate}, Reward: {Reward}";
+        }
+    }
+
+    public class Hero
+    {
+        private Person _heroData;
+        private string _birthPlace;
+        private HeroClass _heroClass;
+        private int _coins;
+        private Quest[] _quests;
+
+        public Person HeroData
+        {
+            get { return _heroData; }
+            set { _heroData = value; }
+        }
+
+        public string BirthPlace
+        {
+            get { return _birthPlace; }
+            set { _birthPlace = value; }
+        }
+
+        public HeroClass HeroClass
+        {
+            get { return _heroClass; }
+            set { _heroClass = value; }
+        }
+
+        public int Coins
+        {
+            get { return _coins; }
+            set { _coins = value; }
+        }
+
+        public Quest[] Quests
+        {
+            get { return _quests; }
+            set { _quests = value; }
+        }
+
+        public Hero(Person heroData, string birthPlace, HeroClass heroClass, int coins)
+        {
+            _heroData = heroData;
+            _birthPlace = birthPlace;
+            _heroClass = heroClass;
+            _coins = coins;
+            _quests = new Quest[0];
+        }
+
+        public Hero()
+        {
+            _heroData = new Person();
+            _birthPlace = "Default birth place";
+            _heroClass = HeroClass.Warrior;
+            _coins = 0;
+            _quests = new Quest[0];
+        }
+
+        public Quest LatestQuest
+        {
+            get
+            {
+                if (_quests.Length == 0) return null;
+
+                Quest latestQuest = _quests[_quests.Length - 1];
+
+                foreach (Quest quest in _quests)
+                {
+                    if (quest.TaskDate > latestQuest.TaskDate)
+                        latestQuest = quest;
+                }
+
+                return latestQuest;
+            }
+        }
+
+        public void AddQuests(params Quest[] quests)
+        {
+            Array.Resize(ref _quests, _quests.Length + quests.Length);
+            Array.Copy(quests, 0, _quests, _quests.Length - quests.Length, quests.Length);
+        }
+
+        public override string ToString()
+        {
+            string questsStr = string.Join(", ", Array.ConvertAll(_quests, q => q.ToString()));
+            return $"Hero Data: {_heroData}, Birth Place: {_birthPlace}, Hero Class: {_heroClass}, Coins: {_coins}, Quests: [{questsStr}]";
+        }
+
+
+        public string ToShortString()
+        {
+            return $"Hero Data: {_heroData}, Birth Place: {_birthPlace}, Hero Class: {_heroClass}, Coins: {_coins}";
+        }
+    }
+
+    public class Person
+    {
+        public string Name { get; set; }
+        public int Age { get; set; }
+
+        public Person()
+        {
+            Name = "Default name";
+            Age = 0;
+        }
+
+        public Person(string name, int age)
+        {
+            Name = name;
+            Age = age;
+        }
+
+        public override string ToString()
+        {
+            return $"Name: {Name}, Age: {Age}";
+        }
+
+      
+    }
+
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            // 1. Створити об`єкт типу Hero з використанням конструктора без параметрів
+            Hero hero1 = new Hero();
+           
+            Console.WriteLine(hero1.ToShortString());
+           
+
+            // 2. Присвоїти нові значення всім властивостям створеного об`єкту
+            hero1.HeroData = new Person("John Doe", 30);
+            hero1.BirthPlace = "Kyiv";
+            hero1.HeroClass = HeroClass.Mage;
+            hero1.Coins = 100;
+            
+            Console.WriteLine(hero1.ToShortString());
+ 
+
+            // 3. Створити об`єкт типу Hero з використанням конструктора з параметрами
+            Hero hero2 = new Hero(new Person("Jane Doe", 28), "Lviv", HeroClass.Rogue, 150);
+      
+            Console.WriteLine(hero2.ToString());
+         
+
+            // 4. Додати елементи до списку завдань другого об`єкту
+            hero2.AddQuests(new Quest("Find the treasure", DateTime.Now.AddDays(-3), "500 coins"),
+                            new Quest("Rescue the princess", DateTime.Now.AddDays(-1), "1000 coins"));
+           
+            Console.WriteLine(hero2.ToString());
+          
+
+            // 5. Вивести значення властивості, яка повертає посилання на останнє за датою завдання
+            Console.WriteLine($"Latest quest: {hero2.LatestQuest}");
+
+            // 6. Повіраняти час виконання операцій з елементами одновимірного, двовимірного прямокутного і ступінчастого масивів з однаковим числом елементів типу Quest
+
+            int nrow = 33;
+            int ncolumn = 33;
+
+            // Создание одномерного массива
+            Quest[] arr1D = new Quest[nrow * ncolumn];
+            for (int i = 0; i < nrow * ncolumn; i++)
+            {
+                arr1D[i] = new Quest();
+            }
+
+            // Создание двумерного прямоугольного массива
+            Quest[,] arr2DRect = new Quest[nrow, ncolumn];
+            for (int i = 0; i < nrow; i++)
+            {
+                for (int j = 0; j < ncolumn; j++)
+                {
+                    arr2DRect[i, j] = new Quest();
+                }
+            }
+
+            // Создание двумерного ступенчатого массива
+            Quest[][] arr2DJagged = new Quest[nrow][];
+            for (int i = 0; i < nrow; i++)
+            {
+                arr2DJagged[i] = new Quest[ncolumn];
+                for (int j = 0; j < ncolumn; j++)
+                {
+                    arr2DJagged[i][j] = new Quest();
+                }
+            }
+
+            // Измерение времени операции для одномерного массива
+            var startTime1D = Environment.TickCount;
+            for (int i = 0; i < arr1D.Length; i++)
+            {
+                Console.Write(arr1D[i].TaskName = "1");
+            }
+            Console.WriteLine("\n");
+            var endTime1D = Environment.TickCount;
+
+            // Измерение времени операции для двумерного прямоугольного массива
+            var startTime2DRect = Environment.TickCount;
+            for (int i = 0; i < nrow; i++)
+            {
+                for (int j = 0; j < ncolumn; j++)
+                {
+                    Console.Write(arr2DRect[i, j].TaskName = "2");
+                }
+
+                Console.WriteLine("\n");
+            }
+            var endTime2DRect = Environment.TickCount;
+
+            // Измерение времени операции для двумерного ступенчатого массива
+            var startTime2DJagged = Environment.TickCount;
+            for (int i = 0; i < nrow; i++)
+            {
+                for (int j = 0; j < ncolumn; j++)
+                {
+                    Console.Write(arr2DJagged[i][j].TaskName = "3");
+                }
+                Console.WriteLine();
+            }
+            var endTime2DJagged = Environment.TickCount;
+
+        
+            Console.WriteLine($"Число строк: {nrow}, число столбцов: {ncolumn}");
+            Console.WriteLine($"Время выполнения операции для одномерного массива: {endTime1D - startTime1D} мс");
+            Console.WriteLine($"Время выполнения операции для двумерного прямоугольного массива: {endTime2DRect - startTime2DRect} мс");
+            Console.WriteLine($"Время выполнения операции для двумерного ступенчатого массива: {endTime2DJagged - startTime2DJagged} мс");
+
+        }
+
+
+    }
+}
+
